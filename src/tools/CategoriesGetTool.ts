@@ -12,7 +12,7 @@ class CategoriesGetTool extends MCPTool {
 	schema = CategoriesGetToolArgs;
 
 	async execute(input: MCPInput<this>) {
-		return await Api.get(`categories/${input.walletId}`)
+		return await Api.get(`categories/wallet/${input.walletId}`)
 	}
 }
 

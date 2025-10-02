@@ -13,7 +13,7 @@ class CategoriesPostTool extends MCPTool {
 	schema = CategoriesPostToolArgs;
 
 	async execute(input: MCPInput<this>) {
-		return await Api.post(`categories/${input.walletId}`, {
+		return await Api.post(`categories/wallet/${input.walletId}`, {
 			name: input.name
 		})
 	}
