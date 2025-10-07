@@ -3,7 +3,8 @@ import Api from "../http/api.js";
 import { z } from "zod";
 
 const MessagesPostToolArgs = z.object({
-	content: z.string().describe('Content of message')
+	role: z.string().describe('Message\'s owner'),
+	content: z.string().describe('Content of message'),
 })
 
 class MessagesPostTool extends MCPTool {
@@ -12,7 +13,10 @@ class MessagesPostTool extends MCPTool {
 	schema = MessagesPostToolArgs;
 
 	async execute(input: MCPInput<this>) {
-		return await Api.post('messages')
+		return await Api.post('messages', {
+			role: input.role,
+			content: input.content,
+		})
 	}
 }
 
