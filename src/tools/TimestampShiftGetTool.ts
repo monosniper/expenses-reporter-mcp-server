@@ -1,4 +1,4 @@
-import {MCPTool, MCPInput} from "mcp-framework";
+import {MCPTool, MCPInput, logger} from "mcp-framework";
 import Api from "../http/api.js";
 import {z} from "zod";
 
