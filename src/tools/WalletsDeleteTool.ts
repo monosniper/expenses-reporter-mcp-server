@@ -4,7 +4,7 @@ import { z } from "zod";
 
 const WalletsDeleteToolArgs = z.object({
 	id: z.number().describe('ID of wallet')
-})
+}).strict()
 
 class WalletsDeleteTool extends MCPTool {
 	name = "wallets_delete";

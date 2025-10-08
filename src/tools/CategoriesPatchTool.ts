@@ -5,7 +5,7 @@ import { z } from "zod";
 const CategoriesPatchToolArgs = z.object({
 	id: z.number().describe('ID of category'),
 	name: z.string().describe('New name of category')
-})
+}).strict()
 
 class CategoriesPatchTool extends MCPTool {
 	name = "categories_patch";

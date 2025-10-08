@@ -6,7 +6,7 @@ const WalletsPostToolArgs = z.object({
 	name: z.string().describe('Name of new wallet'),
 	type: z.string().describe('Type of wallet'),
 	tg_ids: z.array(z.number()).describe('Array of Telegram user IDs').optional(),
-})
+}).strict()
 
 class WalletsPostTool extends MCPTool {
 	name = "wallets_post";

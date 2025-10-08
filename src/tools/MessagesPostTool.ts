@@ -3,9 +3,13 @@ import Api from "../http/api.js";
 import { z } from "zod";
 
 const MessagesPostToolArgs = z.object({
-	role: z.string().describe('Message\'s owner'),
-	content: z.string().describe('Content of message'),
-})
+	messages: z.array(
+		z.object({
+			role: z.string().describe('Message\'s owner'),
+			content: z.string().describe('Content of message'),
+		}).describe('Message object').strict()
+	).describe('List of messages to save'),
+}).strict()
 
 class MessagesPostTool extends MCPTool {
 	name = "messages_post";
@@ -14,8 +18,10 @@ class MessagesPostTool extends MCPTool {
 
 	async execute(input: MCPInput<this>) {
 		return await Api.post('messages', {
-			role: input.role,
-			content: input.content,
+			messages: input.messages.map(message => ({
+				role: message.role,
+				content: message.content,
+			}))
 		})
 	}
 }

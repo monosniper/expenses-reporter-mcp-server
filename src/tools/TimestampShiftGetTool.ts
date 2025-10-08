@@ -1,6 +1,6 @@
 import {MCPTool, MCPInput} from "mcp-framework";
 import Api from "../http/api.js";
-import { z } from "zod";
+import {z} from "zod";
 
 const TimestampShiftGetToolArgs = z.object({
 	year: z.number().optional().describe('Year'),
@@ -17,11 +17,42 @@ const TimestampShiftGetToolArgs = z.object({
 	shift_minutes: z.number().optional().describe('Shift minutes'),
 	shift_seconds: z.number().optional().describe('Shift seconds'),
 	range: z.boolean().optional().describe('Return range (start/end of day)')
-})
+}).strict()
 
 class TimestampShiftGetTool extends MCPTool {
 	name = "timestamp_shift_get";
-	description = "Получение временной метки с возможностью сдвига даты/времени";
+	description = `
+		Returns a UTC timestamp (seconds) or a range of timestamps.
+
+        **Modes:**
+        1. **Absolute date/time** — use \`year\`, \`month\`, \`day\`, \`hours\`, \`minutes\`, \`seconds\`
+           as exact values. Missing parts default to current UTC.
+           - Example: \`year=2025&month=6&day=20&hours=18\` → 2025-06-20 18:00:00 UTC
+           - Example: \`hours=16&minutes=30\` → today at 16:30:00 UTC
+
+        2. **Relative shift** — use \`shift_years\`, \`shift_months\`, \`shift_weeks\`,
+           \`shift_days\`, \`shift_hours\`, \`shift_minutes\`, \`shift_seconds\`
+           as offsets from the base datetime. Values can be negative.
+           - Example: \`shift_days=1&shift_hours=2\` → now + 1 day + 2 hours
+           - Example: \`shift_minutes=-30\` → now - 30 minutes
+           - Example: \`year=2025&month=6&day=20&hours=18&shift_days=2\`
+             → 2025-06-20 18:00:00 UTC + 2 days
+
+        3. **Range mode** — to request start and end of a day (00:00:00–23:59:59)
+           or another period. Use \`range=true\` together with absolute or relative
+           params. The response will contain \`from\` and \`to\`.
+           - Example: \`shift_days=1&range=true\` → timestamps for 00:00:00 and 23:59:59 of tomorrow UTC
+           - Example: \`year=2025&month=6&day=20&range=true\` → timestamps for 00:00:00 and 23:59:59 of 2025-06-20 UTC
+
+        **Important rule:** absolutely **all timestamp generation, parsing,
+        calculation, or conversion must use this endpoint**.
+        The AI should **never** create or manipulate timestamps directly,
+        but always rely on this tool in every case where a timestamp is needed.
+        For the current date, specify \`shift_days=0\`, for tomorrow — \`shift_days=1\`,
+        for other shifts — the corresponding number.
+        Do not calculate timestamps yourself and do not use built-in time functions.
+        Always get them through the tool.
+	`.trim();
 	schema = TimestampShiftGetToolArgs;
 
 	async execute(input: MCPInput<this>) {
@@ -40,7 +71,7 @@ class TimestampShiftGetTool extends MCPTool {
 		if (input.shift_minutes !== undefined) params.shift_minutes = input.shift_minutes;
 		if (input.shift_seconds !== undefined) params.shift_seconds = input.shift_seconds;
 		if (input.range !== undefined) params.range = input.range;
-		
+
 		return await Api.get('timestamp-shift', params)
 	}
 }

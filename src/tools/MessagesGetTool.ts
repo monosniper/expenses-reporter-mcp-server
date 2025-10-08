@@ -5,7 +5,7 @@ import { z } from "zod";
 const MessagesGetToolArgs = z.object({
 	limit: z.number().describe('Limit of messages to retreive'),
 	tgId: z.number().describe('Telegram ID of user'),
-})
+}).strict()
 
 class MessagesGetTool extends MCPTool {
 	name = "messages_get";

@@ -47,7 +47,6 @@ class Api {
 		if (method !== "GET" && method !== "HEAD") {
 			options.body = JSON.stringify(body);
 		}
-		console.log(url.toString())
 		return await this.send(url.toString(), options);
 	}
 

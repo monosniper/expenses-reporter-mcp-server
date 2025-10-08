@@ -4,7 +4,7 @@ import { z } from "zod";
 
 const ExpensesDeleteToolArgs = z.object({
 	id: z.number().describe('ID of expense')
-})
+}).strict()
 
 class ExpensesDeleteTool extends MCPTool {
 	name = "expenses_delete";

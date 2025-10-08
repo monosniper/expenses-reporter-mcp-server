@@ -6,7 +6,7 @@ const WalletsPatchToolArgs = z.object({
 	id: z.number().describe('ID of wallet'),
 	name: z.string().optional().describe('New name of wallet'),
 	tg_ids: z.array(z.number()).optional().describe('Array of Telegram user IDs')
-})
+}).strict()
 
 class WalletsPatchTool extends MCPTool {
 	name = "wallets_patch";

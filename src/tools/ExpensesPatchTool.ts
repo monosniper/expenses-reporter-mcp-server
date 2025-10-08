@@ -6,7 +6,7 @@ const ExpensesPatchToolArgs = z.object({
 	id: z.number().describe('ID of expense'),
 	amount: z.number().optional().describe('New amount of expense'),
 	categoryId: z.number().optional().describe('New category ID for expense')
-})
+}).strict()
 
 class ExpensesPatchTool extends MCPTool {
 	name = "expenses_patch";

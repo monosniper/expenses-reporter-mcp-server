@@ -6,7 +6,7 @@ const ExpensesPostToolArgs = z.object({
 	walletId: z.number().describe('ID of wallet'),
 	amount: z.number().describe('Amount of expense'),
 	categoryId: z.number().describe('Category ID for expense')
-})
+}).strict()
 
 class ExpensesPostTool extends MCPTool {
 	name = "expenses_post";

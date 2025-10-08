@@ -5,7 +5,7 @@ import { z } from "zod";
 const CategoriesPostToolArgs = z.object({
 	walletId: z.number().describe('ID of wallet'),
 	name: z.string().describe('Name of new category')
-})
+}).strict()
 
 class CategoriesPostTool extends MCPTool {
 	name = "categories_post";

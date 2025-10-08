@@ -4,7 +4,7 @@ import { z } from "zod";
 
 const CategoriesDeleteToolArgs = z.object({
 	id: z.number().describe('ID of category')
-})
+}).strict()
 
 class CategoriesDeleteTool extends MCPTool {
 	name = "categories_delete";

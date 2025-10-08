@@ -4,7 +4,7 @@ import { z } from "zod";
 
 const CategoriesGetToolArgs = z.object({
 	walletId: z.number().describe('ID of wallet')
-})
+}).strict()
 
 class CategoriesGetTool extends MCPTool {
 	name = "categories_get";
