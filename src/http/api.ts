@@ -1,3 +1,26 @@
+import {logger} from "mcp-framework";
+
+interface ApiRequestBase {
+	endpoint: string;
+	headers?: Record<string, string | number>;
+}
+
+interface ApiRequestQuery extends ApiRequestBase {
+	params?: Record<string, any>;
+	body?: never;
+	headers?: Record<string, string | number>;
+}
+
+interface ApiRequestBody extends ApiRequestBase {
+	body?: object;
+	params?: never;
+	headers?: Record<string, string | number>;
+}
+
+type ApiRequestArgs =
+	| ({ method?: 'GET' | 'DELETE' } & ApiRequestQuery)
+	| ({ method?: 'POST' | 'PUT' | 'PATCH' } & ApiRequestBody);
+
 class Api {
 	private readonly host: string;
 
@@ -5,70 +28,65 @@ class Api {
 		if (typeof process.env.API_HOST !== 'string') {
 			throw new Error('Missing API host');
 		}
-
 		this.host = process.env.API_HOST;
 	}
 
 	private async send(url: string, options: RequestInit): Promise<object> {
 		try {
 			const response = await fetch(url, options);
-
 			if (!response.ok) {
 				const text = await response.text();
 				throw new Error(`HTTP ${response.status}: ${text}`);
 			}
-
 			return await response.json();
 		} catch (error: any) {
-			console.error("API error:", error.message ?? error);
+			console.log(url, options);
+			console.error('API error:', error.message ?? error);
 			return { error: error.message ?? String(error) };
 		}
 	}
 
-	async request(endpoint: string, method: string = "GET", params: Record<string, any> = {}, body: object = {}): Promise<object> {
+	async request(args: ApiRequestArgs): Promise<object> {
+		const { endpoint, method = 'GET', params, body, headers = {} } = args;
 		const url = new URL(`${this.host}/api/v1/${endpoint}`);
 
-		// прикручиваем query-параметры
-		Object.entries(params).forEach(([key, value]) => {
-			if (value !== undefined && value !== null) {
-				url.searchParams.append(key, String(value));
-			}
-		});
+		if (params) {
+			Object.entries(params).forEach(([key, value]) => {
+				if (value !== undefined && value !== null) {
+					url.searchParams.append(key, String(value));
+				}
+			});
+		}
 
 		const options: RequestInit = {
 			method,
 			headers: {
-				"X-Telegram-Id": "1",
-				"X-Telegram-Name": "Ravil",
-				"Content-Type": "application/json",
+				'Content-Type': 'application/json',
+				...headers,
 			},
 		};
 
-		if (method !== "GET" && method !== "HEAD") {
+		if (body && method !== 'GET') {
 			options.body = JSON.stringify(body);
 		}
+
 		return await this.send(url.toString(), options);
 	}
 
-	// удобные шорткаты
-	async get(endpoint: string, params: Record<string, any> = {}): Promise<object> {
-		return this.request(endpoint, "GET", params);
+	async get(args: ApiRequestQuery) {
+		return this.request({ ...args, method: 'GET' });
 	}
 
-	async post(endpoint: string, body: object = {}): Promise<object> {
-		return this.request(endpoint, "POST", {}, body);
+	async delete(args: ApiRequestQuery) {
+		return this.request({ ...args, method: 'DELETE' });
 	}
 
-	async put(endpoint: string, body: object = {}): Promise<object> {
-		return this.request(endpoint, "PUT", {}, body);
+	async post(args: ApiRequestBody) {
+		return this.request({ ...args, method: 'POST' });
 	}
 
-	async patch(endpoint: string, body: object = {}): Promise<object> {
-		return this.request(endpoint, "PATCH", {}, body);
-	}
-
-	async delete(endpoint: string, params: Record<string, any> = {}): Promise<object> {
-		return this.request(endpoint, "DELETE", params);
+	async patch(args: ApiRequestBody) {
+		return this.request({ ...args, method: 'PATCH' });
 	}
 }
 

@@ -1,6 +1,8 @@
 import {MCPTool, MCPInput, logger} from "mcp-framework";
 import Api from "../http/api.js";
 import {z} from "zod";
+import {telegramHeaders, TelegramToolArgs} from "../TelegramToolArgs.js";
+import config from "../config.js";
 
 const TimestampShiftGetToolArgs = z.object({
 	year: z.number().optional().describe('Year'),
@@ -17,7 +19,7 @@ const TimestampShiftGetToolArgs = z.object({
 	shift_minutes: z.number().optional().describe('Shift minutes'),
 	shift_seconds: z.number().optional().describe('Shift seconds'),
 	range: z.boolean().optional().describe('Return range (start/end of day)')
-}).strict()
+})
 
 class TimestampShiftGetTool extends MCPTool {
 	name = "timestamp_shift_get";
@@ -53,7 +55,7 @@ class TimestampShiftGetTool extends MCPTool {
         Do not calculate timestamps yourself and do not use built-in time functions.
         Always get them through the tool.
 	`.trim();
-	schema = TimestampShiftGetToolArgs;
+	schema = TimestampShiftGetToolArgs.merge(TelegramToolArgs);
 
 	async execute(input: MCPInput<this>) {
 		const params: any = {};
@@ -72,7 +74,14 @@ class TimestampShiftGetTool extends MCPTool {
 		if (input.shift_seconds !== undefined) params.shift_seconds = input.shift_seconds;
 		if (input.range !== undefined) params.range = input.range;
 
-		return await Api.get('timestamp-shift', params)
+		return await Api.get({
+			endpoint: 'timestamp-shift',
+			params,
+			headers: {
+				[config.headers.telegram_id]: input[telegramHeaders.telegram_id],
+				[config.headers.telegram_name]: encodeURIComponent(input[telegramHeaders.telegram_name]),
+			}
+		})
 	}
 }
 
