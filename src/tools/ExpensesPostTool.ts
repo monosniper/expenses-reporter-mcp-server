@@ -6,8 +6,12 @@ import config from "../config.js";
 
 const ExpensesPostToolArgs = z.object({
 	walletId: z.number().describe('ID of wallet'),
-	amount: z.number().describe('Amount of expense'),
-	categoryId: z.number().describe('Category ID for expense')
+	expenses: z.array(
+		z.object({
+			amount: z.number().describe('Amount of expense'),
+			categoryId: z.number().describe('Category ID for expense')
+		}).describe('Expense data'),
+	).describe('Array of expenses data'),
 }).strict()
 
 class ExpensesPostTool extends MCPTool {
@@ -19,8 +23,11 @@ class ExpensesPostTool extends MCPTool {
 		return await Api.post({
 			endpoint: `expenses/wallet/${input.walletId}`,
 			body: {
-				amount: input.amount,
-				categoryId: input.categoryId
+				// @ts-ignore
+				expenses: input.expenses.map((expense: any) => ({
+					amount: expense.amount,
+					categoryId: expense.categoryId
+				}))
 			},
 			headers: {
 				[config.headers.telegram_id]: input[telegramHeaders.telegram_id],

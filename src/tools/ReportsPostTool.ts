@@ -12,7 +12,7 @@ const ReportsPostToolArgs = z.object({
 
 class ReportsPostTool extends MCPTool {
 	name = "reports_post";
-	description = "Генерация отчета";
+	description = "Генерация отчета. Перед этим обязательно нужно вызывать тул normalize_categories";
 	schema = ReportsPostToolArgs.merge(TelegramToolArgs);
 
 	async execute(input: MCPInput<this>) {

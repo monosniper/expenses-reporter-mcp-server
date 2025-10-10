@@ -6,7 +6,6 @@ import config from "../config.js";
 
 const MessagesGetToolArgs = z.object({
 	limit: z.number().describe('Limit of messages to retreive'),
-	tgId: z.number().describe('Telegram ID of user'),
 }).strict()
 
 class MessagesGetTool extends MCPTool {
@@ -19,7 +18,6 @@ class MessagesGetTool extends MCPTool {
 			endpoint: 'messages',
 			params: {
 				limit: input.limit,
-				tgId: input.tgId,
 			},
 			headers: {
 				[config.headers.telegram_id]: input[telegramHeaders.telegram_id],

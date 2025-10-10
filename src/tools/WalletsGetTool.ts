@@ -5,7 +5,12 @@ import config from "../config.js";
 
 class WalletsGetTool extends MCPTool {
 	name = "wallets_get";
-	description = "Получение списка кошельков текущего телеграм пользователя";
+	description = `
+		Получение списка кошельков текущего телеграм пользователя.
+		В ответе может быть role:
+		"owner" — пользователь владелец кошелька.
+		role: "member" — пользователь только участник.
+	`;
 	schema = TelegramToolArgs;
 
 	async execute(input: MCPInput<this>) {
