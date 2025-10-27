@@ -7,7 +7,8 @@ import config from "../config.js";
 const ExpensesPatchToolArgs = z.object({
 	id: z.number().describe('ID of expense'),
 	amount: z.number().describe('New amount of expense'),
-	categoryId: z.number().describe('New category ID for expense')
+	categoryId: z.number().describe('New category ID for expense'),
+	date: z.string().describe('Date of expense (UNIX Timestamp)').optional(),
 }).strict()
 
 class ExpensesPatchTool extends MCPTool {
@@ -19,7 +20,8 @@ class ExpensesPatchTool extends MCPTool {
 		const body: any = {};
 		if (input.amount !== undefined) body.amount = input.amount;
 		if (input.categoryId !== undefined) body.categoryId = input.categoryId;
-		
+		if (input.date !== undefined) body.date = input.date;
+
 		return await Api.patch({
 			endpoint: `expenses/${input.id}`,
 			body,

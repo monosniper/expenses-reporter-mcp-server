@@ -9,7 +9,8 @@ const ExpensesPostToolArgs = z.object({
 	expenses: z.array(
 		z.object({
 			amount: z.number().describe('Amount of expense'),
-			categoryId: z.number().describe('Category ID for expense')
+			categoryId: z.number().describe('Category ID for expense'),
+			date: z.string().describe('Date of expense (UNIX Timestamp)').optional(),
 		}).describe('Expense data'),
 	).describe('Array of expenses data'),
 }).strict()
@@ -26,6 +27,7 @@ class ExpensesPostTool extends MCPTool {
 				// @ts-ignore
 				expenses: input.expenses.map((expense: any) => ({
 					amount: expense.amount,
+					date: expense.date,
 					categoryId: expense.categoryId
 				}))
 			},
